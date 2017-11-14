@@ -1,0 +1,68 @@
+Christian Youngers 304166778
+Frank She 204172020
+
+Slip Days Used for this lab: 1
+Slip Days left (both partners): 2
+----------------------------------------------------------------------
+Lab 2 Write up
+----------------------------------------------------------------------
+Describe any design decisions you made. These may be minimal for Lab 1.
+For Join and Filter operators, we used ArrayLists to store child Tuples. 
+When the child iterators were opened, the array containing child Tuples 
+was inititiated based on the constraints mentioned in fetchNext().
+
+Aggregates:
+   This part of the lab had a similar layout for both IntegerAggregate
+and StringAggregate. IntegerAggregate used a large hashmap that mapped
+a key or the value of the group by field to a corresponding aggregate
+value for that group. The aggregate values were specific to which 
+operation was used. Once the map was full of mappings from group by
+values to aggregate values, it involved taking the key set of the map,
+with the .keySet() method, and iterating through those objects and 
+extracting the corresponding aggregate value and combining it into a
+tuple. There was the special case where there was NO_GROUPING as the 
+group by field index, in which we simply mapped everything to the
+same bucket, and only made a tuple of length one to return. When
+making the iterator, it was difficult to check which type was being
+used in the keySet and converting that corresponding object to the 
+correct either integer or string in order to initialize each tuple.
+   The more difficult part of this came when distinguishing between
+integer or string to aggregate and generalizing the aggregator to fit
+either situation. It took a long time trying to find out that one can
+convert and object type into a different type by asserting that the
+object was an instance of another object, then casting it.
+
+HeapPage, HeapFile:
+For the deleteTuple() function in HeapPage.java, first we checked if the 
+record id of this tuple had the page id of the page being called. 
+If it was, we found the tuple number and removed the tuple from the page. 
+For insertTuple(), we checked if this page had any empty slots, 
+if it did then we got that slot with getNextFreeSlot() and marked that 
+slot as used, storing the tuple. For markDirty(), 
+we just stored the transaction id that made this page dirty. 
+For markSlotUsed(), we used similar logic to isSlotUsed() to rewrite the header.
+
+BufferPool:
+For the eviction policy, we chose Most Recently Used. 
+We recorded the most recently used page's location in the buffer, 
+and chose it for eviction when the buffer was full. 
+If the buffer was already full, then the most recently used page's 
+index stayed the same. Otherwise the most recently used page's index 
+was the newest page.
+----------------------------------------------------------------------
+Discuss and justify any changes you made to the API.
+
+----------------------------------------------------------------------
+Describe any missing or incomplete elements of your code.
+
+----------------------------------------------------------------------
+Describe how long you spent on the project, and whether there was
+ anything you found particularly difficult or confusing.i
+Probably spent about the same amount of time as on lab 1 overall, 
+about 20 hours. The most confusing or difficult part of this lab is
+the lack of guidance when coming up with an implementation of certain
+objects. Lots of the classes required thinking outside the box as far
+as data structures to do the bulk of the work. Maybe a few more hints
+as to what to use in certain situations could help save a lot of time.
+Understanding how the insertTuple() and deleteTuple() functions worked 
+within a Page, File and the BufferPool was confusing as well.

@@ -1,0 +1,61 @@
+----------------------------------------------------------------------
+Lab 3 Write-up
+----------------------------------------------------------------------
+Life of a Query in SimpleDB:
+
+Step 1: simpledb.Parser.main() and simpledb.Parser.start()
+-- In main() the argument count is checked then start() is called on
+    the parser
+-- start() 
+   -- loads the schema of the Catalog from argv[0] and then
+       calculates statistics with call to .computeStatistics() which 
+       creates a new TableStats object for each table that the catalog
+       contains with TableStats s = new TableStats(tableid, IOCOSTPERPAGE);
+   -- continues and loops throught each statement, calling
+       processNextStatement(new ByteArrayInputStream(statementBytes));
+
+Step 2: simpledb.Parser.processNextStatement()
+-- 2 key processes:
+   -- gets physical plan by calling 
+       handleQueryStatement((ZQuery) s, curtrans.getId());
+   -- executes the query with query.execute();
+
+Step 3: simpledb.Parser.handleQueryStatement()
+-- creates a new Query object and initializes with tId
+-- parses the logical plane with parseQueryLogicalPlan(tId, s);
+-- set the physical and logical plans to the query
+-- then invokes the physical plan with call to invoke(null, 
+    (Operator) physicalPlan, lp.getTableAliasToIdMapping(), 
+    TableStats.getStatsMap());
+-- returns the query object
+
+Step 4: simpledb.Parser.parseQueryLogicalPlan()
+-- walks through the tables in FROM clause and adds scan of each one 
+    with call to addScan(id, name);
+-- gets the WHERE clause by calling processExpression(tid, wx, lp);
+-- gets the GROUP BY clause and field outputs it to screen
+-- gets the SELECT clause and gets any aggregates that are included
+-- gets the ORDER BY clause and adds the sort to the logical plan
+-- return the logical plan object
+
+Step 5: simpledb.Parser.processExpression()
+-- checks for only AND operators with getOperator() and recursively 
+    calls itself on each side of the AND clause
+-- calls getOperands(); and then evaluates each one 
+-- if a sub query exists as operand, then calls parseQueryLogicalPlan()
+    to evaluate that query the same way the current one is being done
+-- adds appropriate join based on the operands if contained in
+    different tables
+-- adds appropriate filter to logical plan based on operands
+
+Step 6:
+-- Query executed by execute() and printed results to the screen
+-- End of Query life
+----------------------------------------------------------------------
+
+
+
+
+
+
+----------------------------------------------------------------------
